@@ -1,5 +1,5 @@
 // svg container
-var svgHeight = 660;
+var svgHeight = 650;
 var svgWidth = 800;
 
 // margins
@@ -7,7 +7,7 @@ var margin = {
   top: 50,
   right: 20,
   bottom: 100,
-  left: 80
+  left: 50
 };
 
 // chart area minus margins
@@ -15,7 +15,7 @@ var height = svgHeight - margin.top - margin.bottom;
 var width = svgWidth - margin.left - margin.right;
 
 // Create an SVG wrapper, append an SVG group that will hold our chart and shift the latter by left and top margins.
-var svg = d3.select(".container")
+var svg = d3.select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -32,7 +32,6 @@ d3.csv("data.csv").then(function(povertyData) {
     povertyData.forEach(function(data) {
     data.poverty = +data.poverty;
     data.obesity = +data.obesity;
-    // data.abv = +data.abv;
   });
 
   // Initial Params
@@ -48,7 +47,7 @@ var xLinearScale = d3.scaleLinear()
 
   // scale y to chart height
 var yLinearScale = d3.scaleLinear()
-  .domain([0, d3.max(povertyData, d => d.obesity)])
+  .domain([19, d3.max(povertyData, d => d.obesity)])
   .range([height, 0]);
 
 //Create axis functions
@@ -77,6 +76,17 @@ chartGroup.append("g")
     .attr("fill", "blue")
     .attr("opacity", ".5");
 
+  chartGroup.selectAll("label")
+    .data(povertyData)
+    .enter()
+    .append("text")
+    .attr("y", d => yLinearScale(d.obesity) - 10)
+    .attr("x", d => xLinearScale(d.poverty) - 11)
+    .attr("dy", "1em")
+    .attr("class", "axisText")
+    .text(d => d.abv);
+
+
     //Initialize tool tip
     // ==============================
     var toolTip = d3.tip()
@@ -86,34 +96,33 @@ chartGroup.append("g")
         return (`${d.state}<br>Poverty: ${d.poverty}% <br>Obesity: ${d.obesity}%`);
       });
 
-
-    // Step 7: Create tooltip in the chart
+    // Create tooltip in the chart
     // ==============================
     chartGroup.call(toolTip);
 
-    // Step 8: Create event listeners to display and hide the tooltip
+    // Create event listeners to display and hide the tooltip
     // ==============================
     circlesGroup.on("click", function(data) {
       toolTip.show(data, this);
     })
-      // onmouseout event
-      .on("mouseout", function(data, index) {
-        toolTip.hide(data);
-      });
+    // onmouseout event
+    .on("mouseout", function(data, index) {
+      toolTip.hide(data);
+    });
 
-    // Create axes labels
-    chartGroup.append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 0 - margin.left + 40)
-      .attr("x", 0 - (height / 2))
-      .attr("dy", "1em")
-      .attr("class", "axisText")
-      .text("Obesity in %");
+        // Create axes labels
+        chartGroup.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left - 3)
+          .attr("x", 0 - (height / 2))
+          .attr("dy", "1em")
+          .attr("class", "axisText")
+          .text("Obesity (%)");
 
-    chartGroup.append("text")
-      .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
-      .attr("class", "axisText")
-      .text("Poverty in %");
+        chartGroup.append("text")
+          .attr("transform", `translate(${width / 2}, ${height + margin.top + 10})`)
+          .attr("class", "axisText")
+          .text("In Poverty (%)");
   }).catch(function(error) {
     console.log(error);
   });
