@@ -47,7 +47,7 @@ var xLinearScale = d3.scaleLinear()
 
   // scale y to chart height
 var yLinearScale = d3.scaleLinear()
-  .domain([19, d3.max(povertyData, d => d.obesity)])
+  .domain([20, d3.max(povertyData, d => d.obesity)])
   .range([height, 0]);
 
 //Create axis functions
@@ -74,7 +74,7 @@ chartGroup.append("g")
     .attr("cy", d => yLinearScale(d.obesity))
     .attr("r", 15)
     .attr("fill", "blue")
-    .attr("opacity", ".5");
+    .attr("opacity", ".4");
 
   chartGroup.selectAll("label")
     .data(povertyData)
@@ -102,7 +102,7 @@ chartGroup.append("g")
 
     // Create event listeners to display and hide the tooltip
     // ==============================
-    circlesGroup.on("click", function(data) {
+    circlesGroup.on("mouseover", function(data) {
       toolTip.show(data, this);
     })
     // onmouseout event
